@@ -58,8 +58,8 @@ jobs:
     - name: Run build
       run: |
         type protoc || echo protoc not found on path
-        find /  -name protoc 2>/dev/null
-        echo "{{defaultContext}}"
+        find /  -name protoc 2>/dev/null || /bin/true
+        echo "{{defaultContext}}" 
         pwd
         make -C emojivoto-${{ needs.set-vars.outputs.svc_name }} protoc compile
       
