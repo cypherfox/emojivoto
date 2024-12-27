@@ -77,7 +77,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: bugsim-binary
-        path: bin/bugsim
+        path: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target/emojivoto-${{ needs.set-vars.outputs.svc_name }}
         retention-days: 2
   
   docker-image:
