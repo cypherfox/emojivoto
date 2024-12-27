@@ -1,0 +1,202 @@
+# Copyright 2024 Lutz Behnke
+#
+
+name: Build Image
+
+on:
+  push:
+  pull_request:
+    branches: 
+      - main
+      - main-cypherfox
+
+
+jobs:
+  set-vars:
+    runs-on: ubuntu-latest
+    outputs:
+      build_date: ${{ steps.gen_bd.outputs.BUILD_DATE }}
+    steps:
+      - name: set values
+        id: gen_bd
+        run: |
+          echo -n "BUILD_DATE=" >> $GITHUB_OUTPUT
+          date +"%y%m%d" >> $GITHUB_OUTPUT
+  image-emoji:
+    needs: [set-vars]
+
+    env:
+      REGISTRY: ghcr.io
+      REPOSITORY: ${{ github.repository }}
+      BUILD_DATE: ${{ needs.set-vars.outputs.build_date }}
+
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+  
+      - name: Log in to github registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/emoji
+          tags: |
+            type=ref,event=tag
+            type=sha
+            type=raw,value=latest
+  
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./deploy/docker
+          file: deploy/docker/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            BUILD_DATE=${{ env.BUILD_DATE }}
+            VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+  image-voting:
+    needs: [set-vars]
+
+    env:
+      REGISTRY: ghcr.io
+      REPOSITORY: ${{ github.repository }}
+      BUILD_DATE: ${{ needs.set-vars.outputs.build_date }}
+
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+  
+      - name: Log in to github registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/voting
+          tags: |
+            type=ref,event=tag
+            type=sha
+            type=raw,value=latest
+  
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./deploy/docker
+          file: deploy/docker/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            BUILD_DATE=${{ env.BUILD_DATE }}
+            VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+  image-vote-bot:
+    needs: [set-vars]
+
+    env:
+      REGISTRY: ghcr.io
+      REPOSITORY: ${{ github.repository }}
+      BUILD_DATE: ${{ needs.set-vars.outputs.build_date }}
+
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+  
+      - name: Log in to github registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/vote-bot
+          tags: |
+            type=ref,event=tag
+            type=sha
+            type=raw,value=latest
+  
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./deploy/docker
+          file: deploy/docker/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            BUILD_DATE=${{ env.BUILD_DATE }}
+            VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+  image-web:
+    needs: [set-vars]
+
+    env:
+      REGISTRY: ghcr.io
+      REPOSITORY: ${{ github.repository }}
+      BUILD_DATE: ${{ needs.set-vars.outputs.build_date }}
+
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+  
+      - name: Log in to github registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/web
+          tags: |
+            type=ref,event=tag
+            type=sha
+            type=raw,value=latest
+  
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./deploy/docker
+          file: deploy/docker/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            BUILD_DATE=${{ env.BUILD_DATE }}
+            VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+  
+            
