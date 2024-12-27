@@ -57,7 +57,7 @@ jobs:
     # Run build of the application
     - name: Run build
       run: |
-        type protoc
+        type protoc || echo protoc not found on path
         find / -name protoc -follow
         make -C emojivoto-${{ needs.set-vars.outputs.svc_name }} protoc compile
       
