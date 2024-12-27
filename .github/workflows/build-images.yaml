@@ -57,8 +57,7 @@ jobs:
     # Run build of the application
     - name: Run build
       run: |
-        export PROTOC=../bin/protoc ;\
-        export svc_name=emojivoto-${{ needs.set-vars.outputs.svc_name }} ; make -C emojivoto-${{ needs.set-vars.outputs.svc_name }} clean protoc compile
+        PROTOC=../bin/protoc make -C emojivoto-${{ needs.set-vars.outputs.svc_name }} clean protoc compile
       
     ## Run vet & lint on the code
     #- name: Run vet & lint
@@ -126,6 +125,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
-            svc_name=${{ env.SVC_NAME }}
+            svc_name=emojivoto-${{ env.SVC_NAME }}
             BUILD_DATE=${{ env.BUILD_DATE }}
             VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
