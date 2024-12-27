@@ -29,6 +29,7 @@ jobs:
       REGISTRY: ghcr.io
       REPOSITORY: ${{ github.repository }}
       BUILD_DATE: ${{ needs.set-vars.outputs.build_date }}
+      SVC_NAME: emoji
 
     runs-on: ubuntu-latest
     permissions:
@@ -50,7 +51,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/emoji
+          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/${{ env.SVC_NAME }}
           tags: |
             type=ref,event=tag
             type=sha
@@ -59,11 +60,12 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
-          context: ./deploy/docker
+          context: .
           file: deploy/docker/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
+            svc_name=${{ env.SVC_NAME }}
             BUILD_DATE=${{ env.BUILD_DATE }}
             VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
   image-voting:
@@ -73,6 +75,7 @@ jobs:
       REGISTRY: ghcr.io
       REPOSITORY: ${{ github.repository }}
       BUILD_DATE: ${{ needs.set-vars.outputs.build_date }}
+      SVC_NAME: voting
 
     runs-on: ubuntu-latest
     permissions:
@@ -94,7 +97,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/voting
+          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/${{ env.SVC_NAME }}
           tags: |
             type=ref,event=tag
             type=sha
@@ -103,11 +106,12 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
-          context: ./deploy/docker
+          context: .
           file: deploy/docker/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
+            svc_name=${{ env.SVC_NAME }}
             BUILD_DATE=${{ env.BUILD_DATE }}
             VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
   image-vote-bot:
@@ -117,6 +121,7 @@ jobs:
       REGISTRY: ghcr.io
       REPOSITORY: ${{ github.repository }}
       BUILD_DATE: ${{ needs.set-vars.outputs.build_date }}
+      SVC_NAME: vote-bot
 
     runs-on: ubuntu-latest
     permissions:
@@ -138,7 +143,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/vote-bot
+          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/${{ env.SVC_NAME }}
           tags: |
             type=ref,event=tag
             type=sha
@@ -147,11 +152,12 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
-          context: ./deploy/docker
+          context: .
           file: deploy/docker/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
+            svc_name=${{ env.SVC_NAME }}
             BUILD_DATE=${{ env.BUILD_DATE }}
             VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
   image-web:
@@ -161,6 +167,7 @@ jobs:
       REGISTRY: ghcr.io
       REPOSITORY: ${{ github.repository }}
       BUILD_DATE: ${{ needs.set-vars.outputs.build_date }}
+      SVC_NAME: web
 
     runs-on: ubuntu-latest
     permissions:
@@ -182,7 +189,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/web
+          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/${{ env.SVC_NAME }}
           tags: |
             type=ref,event=tag
             type=sha
@@ -191,11 +198,12 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
-          context: ./deploy/docker
+          context: .
           file: deploy/docker/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
+            svc_name=${{ env.SVC_NAME }}
             BUILD_DATE=${{ env.BUILD_DATE }}
             VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
   
