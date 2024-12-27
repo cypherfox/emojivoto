@@ -57,7 +57,8 @@ jobs:
     # Run build of the application
     - name: Run build
       run: |
-        PROTOC=../bin/protoc make -C emojivoto-${{ needs.set-vars.outputs.svc_name }} clean protoc compile
+        export PROTOC=../bin/protoc ;\
+        export svc_name=emojivoto-${{ needs.set-vars.outputs.svc_name }} ; make -C emojivoto-${{ needs.set-vars.outputs.svc_name }} clean protoc compile
       
     ## Run vet & lint on the code
     #- name: Run vet & lint
