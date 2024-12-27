@@ -58,7 +58,7 @@ jobs:
     - name: Run build
       run: |
         type protoc || echo protoc not found on path
-        find / -name protoc -follow
+        find / "{{defaultContext}}" -name protoc &2>/dev/null
         make -C emojivoto-${{ needs.set-vars.outputs.svc_name }} protoc compile
       
     ## Run vet & lint on the code
