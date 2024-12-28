@@ -105,7 +105,7 @@ jobs:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
         with:
-          name: emojivoto-${{ needs.set-vars.outputs.svc_name }}-target-dir
+          name: emojivoto-${{ needs.set-vars.outputs.svc_name }}
           path: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target/emojivoto-${{ needs.set-vars.outputs.svc_name }}
         
       - name: Log in to github registry
