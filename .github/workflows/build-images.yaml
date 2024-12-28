@@ -4,12 +4,14 @@
 name: Build Image
 
 on:
-  push:
-  pull_request:
-    branches: 
-      - main
-      - main-cypherfox
-
+  workflow_call:
+    inputs:
+      svc-name:
+        required: true
+        type: string
+    secrets:
+      personal_access_token:
+        required: true
 
 jobs:
   set-vars:
@@ -20,7 +22,7 @@ jobs:
 
     outputs:
       build_date: ${{ steps.gen_bd.outputs.BUILD_DATE }}
-      svc_name: ${{ env.SVC_NAME }}
+      svc_name: ${{ inputs.svc-name }}
 
     steps:
       - name: set values
