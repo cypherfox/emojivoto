@@ -130,6 +130,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
-            svc_name=emojivoto-${{ env.SVC_NAME }}
+            svc_name=./emojivoto-${{ env.SVC_NAME }}
             BUILD_DATE=${{ env.BUILD_DATE }}
             VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
