@@ -125,14 +125,11 @@ jobs:
             type=sha
             type=raw,value=latest
   
-      - name: check setup
-        run: |
-          echo "{{defaultContext}}"
-
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
-          context: "{{defaultContext}}"
+          #context: "{{defaultContext}}"
+          context: .
           file: Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
