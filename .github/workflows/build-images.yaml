@@ -78,7 +78,7 @@ jobs:
     - name: Retain build artifact
       uses: actions/upload-artifact@v3
       with:
-        name: bugsim-binary
+        #name: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target/emojivoto-${{ needs.set-vars.outputs.svc_name }}
         path: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target/emojivoto-${{ needs.set-vars.outputs.svc_name }}
         retention-days: 2
   
@@ -130,6 +130,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
-            svc_name=./emojivoto-${{ env.SVC_NAME }}
+            svc_name=emojivoto-${{ env.SVC_NAME }}
             BUILD_DATE=${{ env.BUILD_DATE }}
             VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
