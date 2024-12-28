@@ -30,7 +30,7 @@ jobs:
           date +"%y%m%d" >> $GITHUB_OUTPUT
 
   # The "build" workflow
-  build_and_test:
+  build-and-test:
     needs: [set-vars]
 
     # The type of runner that the job will run on
@@ -78,14 +78,14 @@ jobs:
     - name: Retain build artifact
       uses: actions/upload-artifact@v3
       with:
-        name: emojivoto-${{ needs.set-vars.outputs.svc_name }}-target-dir
-        path: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target/
+        name: emojivoto-${{ needs.set-vars.outputs.svc_name }}
+        path: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target/emojivoto-${{ needs.set-vars.outputs.svc_name }}
         retention-days: 2
   
   docker-image:
     needs: 
       - set-vars
-      - build_and_test
+      - build-and-test
 
     env:
       REGISTRY: ghcr.io
@@ -106,7 +106,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: emojivoto-${{ needs.set-vars.outputs.svc_name }}-target-dir
-          path: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target
+          path: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target/emojivoto-${{ needs.set-vars.outputs.svc_name }}
         
       - name: Log in to github registry
         uses: docker/login-action@v3
