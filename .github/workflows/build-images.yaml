@@ -76,7 +76,7 @@ jobs:
     
     # upload the resulting artifact
     - name: Retain build artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: emojivoto-${{ needs.set-vars.outputs.svc_name }}
         path: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target/emojivoto-${{ needs.set-vars.outputs.svc_name }}
