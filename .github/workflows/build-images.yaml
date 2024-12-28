@@ -78,8 +78,8 @@ jobs:
     - name: Retain build artifact
       uses: actions/upload-artifact@v3
       with:
-        name: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target/emojivoto-${{ needs.set-vars.outputs.svc_name }}
-        path: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target/emojivoto-${{ needs.set-vars.outputs.svc_name }}
+        name: emojivoto-${{ needs.set-vars.outputs.svc_name }}-target-dir
+        path: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target/
         retention-days: 2
   
   docker-image:
@@ -104,6 +104,9 @@ jobs:
       
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
+        with:
+          name: emojivoto-${{ needs.set-vars.outputs.svc_name }}-target-dir
+          path: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target
         
       - name: Log in to github registry
         uses: docker/login-action@v3
