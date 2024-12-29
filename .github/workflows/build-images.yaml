@@ -1,0 +1,138 @@
+# Copyright 2024 Lutz Behnke
+#
+
+name: Build Image
+
+on:
+  workflow_call:
+    inputs:
+      svc-name:
+        required: true
+        type: string
+
+jobs:
+  set-vars:
+    runs-on: ubuntu-latest
+
+    env:
+      SVC_NAME: emoji-svc
+
+    outputs:
+      build_date: ${{ steps.gen_bd.outputs.BUILD_DATE }}
+      svc_name: ${{ inputs.svc-name }}
+
+    steps:
+      - name: set values
+        id: gen_bd
+        run: |
+          echo -n "BUILD_DATE=" >> $GITHUB_OUTPUT
+          date +"%y%m%d" >> $GITHUB_OUTPUT
+
+  # The "build" workflow
+  build-and-test:
+    needs: [set-vars]
+
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+      # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v3
+    
+    # Setup Go
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22.0' # The Go version to download (if necessary) and use.
+    
+    ## Install all the dependencies
+    - name: Install dependencies
+      run: |
+        go version
+        go get -u golang.org/x/lint/golint
+        go get google.golang.org/grpc@v1.41.0
+        go get google.golang.org/api/support/bundler@v0.22.0
+        go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.27.1
+        go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1.0
+        #go mod tidy || /bin/true
+        #cat go.mod
+
+        
+    # Run build of the application
+    - name: Run build
+      run: |
+        PROTOC=../bin/protoc make -C emojivoto-${{ needs.set-vars.outputs.svc_name }} clean protoc compile
+      
+    ## Run vet & lint on the code
+    #- name: Run vet & lint
+    #  run: |
+    #    make go-vet
+    #    #make go-lint
+    #
+    ## Run testing on the code
+    #- name: Run testing
+    #  run: echo "foo" # cd test && go test -v
+    
+    # upload the resulting artifact
+    - name: Retain build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: emojivoto-${{ needs.set-vars.outputs.svc_name }}
+        path: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target/emojivoto-${{ needs.set-vars.outputs.svc_name }}
+        retention-days: 2
+  
+  docker-image:
+    needs: 
+      - set-vars
+      - build-and-test
+
+    env:
+      REGISTRY: ghcr.io
+      REPOSITORY: ${{ github.repository }}
+      BUILD_DATE: ${{ needs.set-vars.outputs.build_date }}
+      SVC_NAME: ${{ needs.set-vars.outputs.svc_name }}
+
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: emojivoto-${{ needs.set-vars.outputs.svc_name }}
+          path: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target/emojivoto-${{ needs.set-vars.outputs.svc_name }}
+        
+      - name: Log in to github registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}/${{ env.SVC_NAME }}
+          tags: |
+            type=ref,event=tag
+            type=sha
+            type=raw,value=latest
+  
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          #context: "{{defaultContext}}"
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            svc_name=emojivoto-${{ env.SVC_NAME }}
+            BUILD_DATE=${{ env.BUILD_DATE }}
+            VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
