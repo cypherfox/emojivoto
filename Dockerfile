@@ -1,6 +1,15 @@
-FROM buoyantio/emojivoto-svc-base:v12
+FROM ubuntu:24.04
 
 ARG svc_name
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        curl \
+        dnsutils \
+        iptables \
+        jq \
+        nghttp2 \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY $svc_name/target/ /usr/local/bin/
 
