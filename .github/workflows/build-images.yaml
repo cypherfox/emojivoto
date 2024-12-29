@@ -62,6 +62,7 @@ jobs:
     - name: Run build
       run: |
         PROTOC=../bin/protoc make -C emojivoto-${{ needs.set-vars.outputs.svc_name }} clean protoc compile
+        make package-web || echo target package-web not found, this is probably not the web package.
       
     ## Run vet & lint on the code
     #- name: Run vet & lint
