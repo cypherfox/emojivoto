@@ -106,7 +106,11 @@ jobs:
         with:
           name: emojivoto-${{ needs.set-vars.outputs.svc_name }}
           path: emojivoto-${{ needs.set-vars.outputs.svc_name }}/target/
-        
+      
+      - name: check layout of artifacts
+        run: |
+          ls -la emojivoto-${{ needs.set-vars.outputs.svc_name }}/target/
+          
       - name: Log in to github registry
         uses: docker/login-action@v3
         with:
