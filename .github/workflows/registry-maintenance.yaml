@@ -2,7 +2,7 @@ on:
     workflow_dispatch:
     schedule:
       - cron: "5 4 * * *"  # once a day
-  
+
   jobs:
     clean:
       runs-on: ubuntu-latest
