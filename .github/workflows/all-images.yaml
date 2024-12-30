@@ -1,0 +1,28 @@
+#Copyright 2024 Lutz Behnke
+#
+
+name: Build All Images
+
+on:
+  push:
+  pull_request:
+    branches: 
+    - main
+    - main-cypherfox
+
+jobs:
+  emoji-svc:
+    uses: cypherfox/emojivoto/.github/workflows/build-images.yaml@features/cypherfox-images
+    with:
+      svc-name: emoji-svc
+      
+  voting-svc:
+    uses: cypherfox/emojivoto/.github/workflows/build-images.yaml@features/cypherfox-images
+    with:
+      svc-name: voting-svc
+      
+  web:
+    uses: cypherfox/emojivoto/.github/workflows/build-images.yaml@features/cypherfox-images
+    with:
+      svc-name: web
+      
